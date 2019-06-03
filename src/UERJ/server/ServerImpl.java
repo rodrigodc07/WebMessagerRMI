@@ -1,50 +1,35 @@
 package UERJ.server;
 
 import UERJ.Message;
+import UERJ.observer.Observer;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Date;
-import java.util.Stack;
+import java.util.ArrayList;
 
-public class ServerImpl implements ServerInterface{
+public class ServerImpl implements ServerInterface {
 
-    private Stack<Message> messageList = new Stack<>();
-    private Message top;
+    private ArrayList<Observer> observers = new ArrayList();
 
     @Override
-    public String getBody() throws RemoteException {
-        if(messageList.empty())
-            return null;
-        return top.getBody();
-    }
-
-    @Override
-    public Date getDate() throws RemoteException {
-        if(messageList.empty())
-            return null;
-        return top.getDataEnvio();
-    }
-
-    @Override
-    public Message getMessage() throws RemoteException {
-        if(messageList.empty())
-            return null;
-        top =  messageList.pop();
-        return top;
+    public void register(Observer observer) {
+        observers.add(observer);
     }
 
     @Override
     public void sendMessage(Message message) throws RemoteException {
-        messageList.push(message);
+        for (Observer observe :observers)
+            observe.notify(message);
     }
 
     public static void main(String[] args) {
         Registry reg = null;
+        int port = Integer.parseInt(args[0]);
+        String user = args[1];
         try {
-            reg = LocateRegistry.createRegistry(1099);
+            reg = LocateRegistry.createRegistry(port);
         } catch (Exception e) {
             System.out.println("ERROR: Could not create the registry.");
             e.printStackTrace();
@@ -52,10 +37,11 @@ public class ServerImpl implements ServerInterface{
         ServerImpl serverObject = new ServerImpl();
         System.out.println("Waiting...");
         try {
-            reg.rebind("server", (ServerInterface) UnicastRemoteObject.exportObject(serverObject, 0));
+            reg.rebind("server_" + user, (ServerInterface) UnicastRemoteObject.exportObject(serverObject, 0));
         } catch (Exception e) {
             System.out.println("ERROR: Failed to register the server object.");
             e.printStackTrace();
         }
     }
+
 }
