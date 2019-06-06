@@ -8,19 +8,20 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerImpl extends Thread implements ServerInterface, Serializable {
+public class ServerImpl implements ServerInterface, Serializable {
 
     private ClientInterface client;
     private boolean hasClient;
 
     protected static MulticastSocket socket = null;
     protected static byte[] buf = new byte[256];
-
 
     @Override
     public void register(ClientInterface client) throws RemoteException {
@@ -34,28 +35,47 @@ public class ServerImpl extends Thread implements ServerInterface, Serializable 
     }
 
     @Override
+    public ClientInterface getClient() throws RemoteException {
+        return this.client;
+    }
+
+    @Override
     public void sendMessage(Message message) throws RemoteException {
         System.out.println("Enviando Menssagem via Socket");
     }
 
-    public static void main(String[] args) {
+    public ServerImpl(int port, String user) {
         Registry reg = null;
-        int port = Integer.parseInt(args[0]);
-        String user = args[1];
         try {
             reg = LocateRegistry.createRegistry(port);
         } catch (Exception e) {
             System.out.println("ERROR: Could not create the registry.");
             e.printStackTrace();
         }
-        ServerImpl server = new ServerImpl();
         System.out.println("Waiting...");
         try {
-            reg.rebind("server_" + user, (ServerInterface) UnicastRemoteObject.exportObject(server, 0));
+            reg.rebind("server_" + user, (ServerInterface) UnicastRemoteObject.exportObject(this, 0));
         } catch (Exception e) {
             System.out.println("ERROR: Failed to register the server object.");
             e.printStackTrace();
         }
+        boolean hasBound = false;
+        while (!hasBound) {
+            try {
+                Registry registry = LocateRegistry.getRegistry("127.0.0.1", port);
+                this.client = (ClientInterface) registry.lookup("client_" + user);
+                hasBound = true;
+                System.out.println("Connected to UERJ.Client");
+            }
+            catch (NotBoundException ignored) {}
+            catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        ServerInterface server = new ServerImpl(Integer.parseInt(args[0]),args[1]);
         try {
             socket = new MulticastSocket(4446);
             InetAddress group = InetAddress.getByName("230.0.0.0");
@@ -66,7 +86,7 @@ public class ServerImpl extends Thread implements ServerInterface, Serializable 
                 String received = new String(
                         packet.getData(), 0, packet.getLength());
                 if(server.hasClient())
-                    server.client.pullMessages(new Message(received));
+                    server.getClient().pullMessages(new Message(received));
                 if ("end".equals(received)) {
                     break;
                 }

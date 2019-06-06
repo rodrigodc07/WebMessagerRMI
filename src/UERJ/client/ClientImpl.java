@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,40 +21,44 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
     private static Scanner scanner = new Scanner(System.in);
 
-    private static ServerInterface connectToServer(int port, String user) {
+    private ClientImpl(int port, String user) {
         try {
             Registry registry = LocateRegistry.getRegistry("127.0.0.1", port);
             ServerInterface server = (ServerInterface) registry.lookup("server_" + user);
             System.out.println("Connected to UERJ.Server");
-            return server;
+            this.server = server;
+
+            Registry reg = LocateRegistry.getRegistry("127.0.0.1",port);
+            System.out.println("Waiting...");
+            try {
+                reg.rebind("client_" + user, (ClientInterface) UnicastRemoteObject.exportObject(this, 0));
+            } catch (Exception e) {
+                System.out.println("ERROR: Failed to register the server object.");
+                e.printStackTrace();
+            }
+
+            server.register(this);
         } catch (Exception e) {
             System.out.println(e);
-            return null;
         }
 
     }
 
     public static void main(String[] args) {
 
-        ServerInterface server = connectToServer(Integer.parseInt(args[0]),args[1]);
-
-        if (server != null) {
-            ClientInterface client = new ClientImpl();
-            Thread t1 = new Thread((Runnable) client);
-            t1.start();
-            try {
-                client.registryServer(server);
-                server.register(client);
-                while(true) {
-                    String body = getBodyFromConsole();
-                    Message message = new Message(body);
-                    server.sendMessage(message);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        ClientInterface client = new ClientImpl(Integer.parseInt(args[0]),args[1]);
+        Thread t1 = new Thread((Runnable) client);
+        t1.start();
+        try {
+            while(true) {
+                String body = getBodyFromConsole();
+                Message message = new Message(body);
+                client.getServer().sendMessage(message);
             }
-            System.out.println("Finished");
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
+        System.out.println("Finished");
     }
 
     private static String getBodyFromConsole() {
@@ -63,16 +68,18 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
     public void run(){
         while(true) {
-            System.out.println(bufferedMessages.isEmpty());
-            if(!bufferedMessages.isEmpty()){
-                try {
-                    Thread.sleep(500);
+            try {
+                Thread.sleep(500);
+                if(!bufferedMessages.isEmpty()){
+                    Thread.sleep(5000);
                     for (Message message: bufferedMessages){
                         System.out.println(message);
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    bufferedMessages.clear();
                 }
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -91,5 +98,10 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     @Override
     public void pullMessages(Message message) throws RemoteException {
         bufferedMessages.add(message);
+    }
+
+    @Override
+    public ServerInterface getServer() throws RemoteException {
+        return this.server;
     }
 }

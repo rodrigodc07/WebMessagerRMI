@@ -13,4 +13,6 @@ public interface ClientInterface extends Remote {
     public boolean hasServer() throws RemoteException;
 
     public void pullMessages(Message message) throws RemoteException;
+
+    public ServerInterface getServer() throws RemoteException;
 }
