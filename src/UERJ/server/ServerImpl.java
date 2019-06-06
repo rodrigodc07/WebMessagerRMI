@@ -5,23 +5,22 @@ import UERJ.client.ClientInterface;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.rmi.AccessException;
+import java.net.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerImpl implements ServerInterface, Serializable {
+public class ServerImpl implements ServerInterface, Serializable, Runnable {
 
     private ClientInterface client;
     private boolean hasClient;
 
-    protected static MulticastSocket socket = null;
-    protected static byte[] buf = new byte[256];
+    private MulticastSocket socketListener = null;
+    private byte[] buf = new byte[1024];
+    private DatagramSocket socket;
+    private InetAddress group;
 
     @Override
     public void register(ClientInterface client) throws RemoteException {
@@ -41,7 +40,22 @@ public class ServerImpl implements ServerInterface, Serializable {
 
     @Override
     public void sendMessage(Message message) throws RemoteException {
-        System.out.println("Enviando Menssagem via Socket");
+        try {
+            System.out.println("Enviando Menssagem via Socket");
+            multicast(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void multicast(Message message) throws IOException {
+        socket = new DatagramSocket();
+        group = InetAddress.getByName("230.0.0.0");
+        buf = message.toStream();
+
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 4446);
+        socket.send(packet);
+        socket.close();
     }
 
     public ServerImpl(int port, String user) {
@@ -76,26 +90,30 @@ public class ServerImpl implements ServerInterface, Serializable {
 
     public static void main(String[] args) {
         ServerInterface server = new ServerImpl(Integer.parseInt(args[0]),args[1]);
+        Thread t = new Thread((Runnable) server);
+        t.start();
+    }
+
+    @Override
+    public void run() {
         try {
-            socket = new MulticastSocket(4446);
+            socketListener = new MulticastSocket(4446);
             InetAddress group = InetAddress.getByName("230.0.0.0");
-            socket.joinGroup(group);
+            socketListener.joinGroup(group);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                socket.receive(packet);
-                String received = new String(
-                        packet.getData(), 0, packet.getLength());
-                if(server.hasClient())
-                    server.getClient().pullMessages(new Message(received));
-                if ("end".equals(received)) {
+                socketListener.receive(packet);
+                Message received = new Message(packet.getData());
+                if(this.hasClient())
+                    this.getClient().pullMessages(received);
+                if ("end".equals(received.getBody())) {
                     break;
                 }
             }
-            socket.leaveGroup(group);
-            socket.close();
+            socketListener.leaveGroup(group);
+            socketListener.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

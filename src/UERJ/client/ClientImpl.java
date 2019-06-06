@@ -20,6 +20,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     private ArrayList<Message> bufferedMessages= new ArrayList<Message>();
 
     private static Scanner scanner = new Scanner(System.in);
+    private String username;
 
     private ClientImpl(int port, String user) {
         try {
@@ -27,6 +28,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
             ServerInterface server = (ServerInterface) registry.lookup("server_" + user);
             System.out.println("Connected to UERJ.Server");
             this.server = server;
+            this.username = user;
 
             Registry reg = LocateRegistry.getRegistry("127.0.0.1",port);
             System.out.println("Waiting...");
@@ -52,7 +54,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         try {
             while(true) {
                 String body = getBodyFromConsole();
-                Message message = new Message(body);
+                Message message = new Message(body,client.getUsername());
                 client.getServer().sendMessage(message);
             }
         } catch (RemoteException e) {
@@ -62,7 +64,6 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     }
 
     private static String getBodyFromConsole() {
-        System.out.print("Enter a string : ");
         return scanner.nextLine();
     }
 
@@ -103,5 +104,10 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     @Override
     public ServerInterface getServer() throws RemoteException {
         return this.server;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
     }
 }

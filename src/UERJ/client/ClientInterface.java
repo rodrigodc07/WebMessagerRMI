@@ -15,4 +15,6 @@ public interface ClientInterface extends Remote {
     public void pullMessages(Message message) throws RemoteException;
 
     public ServerInterface getServer() throws RemoteException;
+
+    public String getUsername() throws RemoteException;
 }
