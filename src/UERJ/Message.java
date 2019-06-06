@@ -54,6 +54,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return getFrom() + " " + getBody() + " enviado as:" + getDataEnvio();
+        return getFrom() + ": " + getBody() + " enviado as " + getDataEnvio();
     }
 }
