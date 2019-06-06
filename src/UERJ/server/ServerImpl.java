@@ -66,7 +66,7 @@ public class ServerImpl extends Thread implements ServerInterface, Serializable 
                 String received = new String(
                         packet.getData(), 0, packet.getLength());
                 if(server.hasClient())
-                    server.client.printMessages(new Message(received));
+                    server.client.pullMessages(new Message(received));
                 if ("end".equals(received)) {
                     break;
                 }

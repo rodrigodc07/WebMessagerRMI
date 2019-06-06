@@ -7,13 +7,16 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ClientImpl implements ClientInterface, Serializable {
+public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
     private ServerInterface server;
 
     private boolean hasServer = false;
+
+    private ArrayList<Message> bufferedMessages= new ArrayList<Message>();
 
     private static Scanner scanner = new Scanner(System.in);
 
@@ -36,6 +39,8 @@ public class ClientImpl implements ClientInterface, Serializable {
 
         if (server != null) {
             ClientInterface client = new ClientImpl();
+            Thread t1 = new Thread((Runnable) client);
+            t1.start();
             try {
                 client.registryServer(server);
                 server.register(client);
@@ -56,6 +61,22 @@ public class ClientImpl implements ClientInterface, Serializable {
         return scanner.nextLine();
     }
 
+    public void run(){
+        while(true) {
+            System.out.println(bufferedMessages.isEmpty());
+            if(!bufferedMessages.isEmpty()){
+                try {
+                    Thread.sleep(500);
+                    for (Message message: bufferedMessages){
+                        System.out.println(message);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     public void registryServer(ServerInterface server) throws RemoteException {
         this.server = server;
@@ -64,11 +85,11 @@ public class ClientImpl implements ClientInterface, Serializable {
 
     @Override
     public boolean hasServer() throws RemoteException {
-        return false;
+        return hasServer;
     }
 
     @Override
-    public void printMessages(Message message) throws RemoteException {
-        System.out.println(message);
+    public void pullMessages(Message message) throws RemoteException {
+        bufferedMessages.add(message);
     }
 }
