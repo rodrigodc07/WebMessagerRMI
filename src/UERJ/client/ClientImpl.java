@@ -1,15 +1,19 @@
 package UERJ.client;
 
 import UERJ.Message;
-import UERJ.observer.Observer;
 import UERJ.server.ServerInterface;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class Client implements Observer{
+public class ClientImpl implements ClientInterface, Serializable {
+
+    private ServerInterface server;
+
+    private boolean hasServer = false;
 
     private static Scanner scanner = new Scanner(System.in);
 
@@ -31,8 +35,9 @@ public class Client implements Observer{
         ServerInterface server = connectToServer(Integer.parseInt(args[0]),args[1]);
 
         if (server != null) {
-            Client client = new Client();
+            ClientInterface client = new ClientImpl();
             try {
+                client.registryServer(server);
                 server.register(client);
                 while(true) {
                     String body = getBodyFromConsole();
@@ -52,7 +57,18 @@ public class Client implements Observer{
     }
 
     @Override
-    public void notify(Message message) {
+    public void registryServer(ServerInterface server) throws RemoteException {
+        this.server = server;
+        this.hasServer = true;
+    }
+
+    @Override
+    public boolean hasServer() throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public void printMessages(Message message) throws RemoteException {
         System.out.println(message);
     }
 }
