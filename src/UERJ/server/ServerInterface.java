@@ -10,9 +10,6 @@ public interface ServerInterface extends Remote {
 
    public void sendMessage(Message message) throws RemoteException;
 
-   public void register(ClientInterface client) throws RemoteException;
+   public void pushMessage(Message message) throws RemoteException;
 
-   public boolean hasClient() throws RemoteException;
-
-   public ClientInterface getClient() throws RemoteException;
 }

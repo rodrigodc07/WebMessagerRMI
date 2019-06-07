@@ -13,11 +13,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.List;
 
 public class ServerImpl implements ServerInterface, Serializable, Runnable {
 
-    private ClientInterface client;
-    private boolean hasClient;
+    private int port;
 
     private MessageSenderService messageSenderService;
     
@@ -27,36 +28,29 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
     private InetAddress group;
 
     @Override
-    public void register(ClientInterface client) throws RemoteException {
-        this.client = client;
-        this.hasClient = true;
-    }
-
-    @Override
-    public boolean hasClient() throws RemoteException {
-        return hasClient;
-    }
-
-    @Override
-    public ClientInterface getClient() throws RemoteException {
-        return this.client;
-    }
-
-    @Override
     public void sendMessage(Message message) throws RemoteException {
         messageSenderService.send(message);
     }
 
-    public ServerImpl(int port, String user) {
-        RMIRegistry.registryInRMI(port,"server_" + user,this);
+    @Override
+    public void pushMessage(Message message) throws RemoteException {
+        List<String> clients_name = RMIRegistry.listObjects();
+        for (String client_name:clients_name){
+            ClientInterface client = (ClientInterface) RMIRegistry.getObjectFromRMI(port, client_name);
+            client.pullMessages(message);
+        }
+    }
+
+    public ServerImpl(int port) {
+        this.port = port;
+        RMIRegistry.registryInRMI(port,"server",this);
         this.messageSenderService = new MulticastSocketServer();
-        this.client = (ClientInterface) RMIRegistry.getObjectFromRMI(port,"client_" + user);
         System.out.println("Connected to UERJ.Client");
 
     }
 
     public static void main(String[] args) {
-        ServerInterface server = new ServerImpl(Integer.parseInt(args[0]),args[1]);
+        ServerInterface server = new ServerImpl(Integer.parseInt(args[0]));
         Thread t = new Thread((Runnable) server);
         t.start();
     }
@@ -71,8 +65,7 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socketListener.receive(packet);
                 Message received = new Message(packet.getData());
-                if(this.hasClient())
-                    this.getClient().pullMessages(received);
+                pushMessage(received);
                 if ("end".equals(received.getBody())) {
                     break;
                 }

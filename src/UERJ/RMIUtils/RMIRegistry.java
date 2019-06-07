@@ -6,9 +6,16 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RMIRegistry {
 
+
+    private static Registry registry;
 
     public static Registry createRegistry(int port){
         try {
@@ -27,7 +34,7 @@ public class RMIRegistry {
     }
 
     public static Registry getRMIRegistry(int port){
-        Registry registry = createRegistry(port);
+        registry = createRegistry(port);
         if (registry == null)
             registry = getRegistry(port);
         return registry;
@@ -56,6 +63,16 @@ public class RMIRegistry {
             catch (RemoteException e) {
                 e.printStackTrace();
             }
+        }
+    }
+    public static List<String> listObjects() {
+        try {
+            String[] aux = registry.list();
+            List<String> array = Arrays.asList(aux);
+            return array.stream().filter(p -> p.contains("client")).collect(Collectors.toList());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
         }
     }
 }

@@ -22,18 +22,13 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
     private ClientImpl(int port, String user) {
 
-        ServerInterface server = (ServerInterface) RMIRegistry.getObjectFromRMI(port,"server_" + user);
+        ServerInterface server = (ServerInterface) RMIRegistry.getObjectFromRMI(port,"server");
         System.out.println("Connected to UERJ.Server");
 
         this.server = server;
         this.username = user;
 
         RMIRegistry.registryInRMI(port,"client_" + user,this);
-        try {
-            server.register(this);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
