@@ -1,13 +1,11 @@
 package UERJ.client;
 
 import UERJ.Message;
+import UERJ.RMIUtils.RMIRegistry;
 import UERJ.server.ServerInterface;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -23,27 +21,19 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     private String username;
 
     private ClientImpl(int port, String user) {
+
+        ServerInterface server = (ServerInterface) RMIRegistry.getObjectFromRMI(port,"server_" + user);
+        System.out.println("Connected to UERJ.Server");
+
+        this.server = server;
+        this.username = user;
+
+        RMIRegistry.registryInRMI(port,"client_" + user,this);
         try {
-            Registry registry = LocateRegistry.getRegistry("127.0.0.1", port);
-            ServerInterface server = (ServerInterface) registry.lookup("server_" + user);
-            System.out.println("Connected to UERJ.Server");
-            this.server = server;
-            this.username = user;
-
-            Registry reg = LocateRegistry.getRegistry("127.0.0.1",port);
-            System.out.println("Waiting...");
-            try {
-                reg.rebind("client_" + user, (ClientInterface) UnicastRemoteObject.exportObject(this, 0));
-            } catch (Exception e) {
-                System.out.println("ERROR: Failed to register the server object.");
-                e.printStackTrace();
-            }
-
             server.register(this);
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-
     }
 
     public static void main(String[] args) {

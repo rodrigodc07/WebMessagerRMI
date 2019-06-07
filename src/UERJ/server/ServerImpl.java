@@ -1,16 +1,16 @@
 package UERJ.server;
 
 import UERJ.Message;
+import UERJ.RMIUtils.RMIRegistry;
 import UERJ.client.ClientInterface;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.*;
-import java.rmi.NotBoundException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 
 public class ServerImpl implements ServerInterface, Serializable, Runnable {
 
@@ -59,33 +59,11 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
     }
 
     public ServerImpl(int port, String user) {
-        Registry reg = null;
-        try {
-            reg = LocateRegistry.createRegistry(port);
-        } catch (Exception e) {
-            System.out.println("ERROR: Could not create the registry.");
-            e.printStackTrace();
-        }
-        System.out.println("Waiting...");
-        try {
-            reg.rebind("server_" + user, (ServerInterface) UnicastRemoteObject.exportObject(this, 0));
-        } catch (Exception e) {
-            System.out.println("ERROR: Failed to register the server object.");
-            e.printStackTrace();
-        }
-        boolean hasBound = false;
-        while (!hasBound) {
-            try {
-                Registry registry = LocateRegistry.getRegistry("127.0.0.1", port);
-                this.client = (ClientInterface) registry.lookup("client_" + user);
-                hasBound = true;
-                System.out.println("Connected to UERJ.Client");
-            }
-            catch (NotBoundException ignored) {}
-            catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+        RMIRegistry.registryInRMI(port,"server_" + user,this);
+
+        this.client = (ClientInterface) RMIRegistry.getObjectFromRMI(port,"client_" + user);
+        System.out.println("Connected to UERJ.Client");
+
     }
 
     public static void main(String[] args) {
