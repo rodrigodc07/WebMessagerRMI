@@ -3,6 +3,8 @@ package UERJ.server;
 import UERJ.Message;
 import UERJ.RMIUtils.RMIRegistry;
 import UERJ.client.ClientInterface;
+import UERJ.output.MessageSenderService;
+import UERJ.output.MulticastSocketServer;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,6 +19,8 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
     private ClientInterface client;
     private boolean hasClient;
 
+    private MessageSenderService messageSenderService;
+    
     private MulticastSocket socketListener = null;
     private byte[] buf = new byte[1024];
     private DatagramSocket socket;
@@ -40,27 +44,12 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
 
     @Override
     public void sendMessage(Message message) throws RemoteException {
-        try {
-            System.out.println("Enviando Menssagem via Socket");
-            multicast(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void multicast(Message message) throws IOException {
-        socket = new DatagramSocket();
-        group = InetAddress.getByName("230.0.0.0");
-        buf = message.toStream();
-
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 4446);
-        socket.send(packet);
-        socket.close();
+        messageSenderService.send(message);
     }
 
     public ServerImpl(int port, String user) {
         RMIRegistry.registryInRMI(port,"server_" + user,this);
-
+        this.messageSenderService = new MulticastSocketServer();
         this.client = (ClientInterface) RMIRegistry.getObjectFromRMI(port,"client_" + user);
         System.out.println("Connected to UERJ.Client");
 

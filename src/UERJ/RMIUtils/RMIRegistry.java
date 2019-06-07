@@ -1,7 +1,5 @@
 package UERJ.RMIUtils;
 
-import UERJ.client.ClientInterface;
-
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
