@@ -38,6 +38,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         try {
             while(true) {
                 String body = getBodyFromConsole();
+                clearInputedString();
                 Message message = new Message(body,client.getUsername());
                 client.sendMessage(message);
             }
@@ -51,12 +52,17 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         return scanner.nextLine();
     }
 
+    private static void clearInputedString(){
+        System.out.print("\033[1A"); // Move up
+        System.out.print("\033[2K"); // Erase line content
+    }
+
     public void run(){
         while(true) {
             try {
                 Thread.sleep(500);
                 if(!bufferedMessages.isEmpty()){
-                    Thread.sleep(5000);
+                    Thread.sleep(000);
                     bufferedMessages.sort(Comparator.comparing(Message::getDataEnvio).reversed());
                     for (Message message: bufferedMessages){
                         System.out.println(message);
