@@ -1,7 +1,6 @@
 package UERJ.server;
 
 import UERJ.Message;
-import UERJ.client.ClientInterface;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

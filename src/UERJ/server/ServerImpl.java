@@ -45,8 +45,6 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
         this.port = port;
         RMIRegistry.registryInRMI(port,"server",this);
         this.messageSenderService = new MulticastSocketServer();
-        System.out.println("Connected to UERJ.Client");
-
     }
 
     public static void main(String[] args) {

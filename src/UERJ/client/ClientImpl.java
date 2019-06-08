@@ -13,8 +13,6 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
     private ServerInterface server;
 
-    private boolean hasServer = false;
-
     private ArrayList<Message> bufferedMessages= new ArrayList<Message>();
 
     private static Scanner scanner = new Scanner(System.in);
@@ -40,7 +38,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
             while(true) {
                 String body = getBodyFromConsole();
                 Message message = new Message(body,client.getUsername());
-                client.getServer().sendMessage(message);
+                client.sendMessage(message);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -52,6 +50,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         return scanner.nextLine();
     }
 
+    //TODO adiciona ordenacao no buffer de menssagens
     public void run(){
         while(true) {
             try {
@@ -71,24 +70,13 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     }
 
     @Override
-    public void registryServer(ServerInterface server) throws RemoteException {
-        this.server = server;
-        this.hasServer = true;
-    }
-
-    @Override
-    public boolean hasServer() throws RemoteException {
-        return hasServer;
-    }
-
-    @Override
     public void pullMessages(Message message) throws RemoteException {
         bufferedMessages.add(message);
     }
 
     @Override
-    public ServerInterface getServer() throws RemoteException {
-        return this.server;
+    public void sendMessage(Message message) throws RemoteException {
+        server.sendMessage(message);
     }
 
     @Override
