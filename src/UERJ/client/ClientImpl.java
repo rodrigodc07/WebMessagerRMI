@@ -37,6 +37,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         t1.start();
         try {
             while(true) {
+                System.out.print(client.getUsername()+": ");
                 String body = getBodyFromConsole();
                 clearInputedString();
                 Message message = new Message(body,client.getUsername());
@@ -57,15 +58,29 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         System.out.print("\033[2K"); // Erase line content
     }
 
+    private static void clearUsername(String username){
+        String moveBackString = "\b";
+        String clearString = "";
+        for (Character ignored :username.toCharArray()){
+            moveBackString = moveBackString.concat("\b");
+            clearString = clearString.concat(" ");
+        }
+        System.out.print(moveBackString);
+        System.out.print(clearString);
+        System.out.print(moveBackString);
+    }
+
     public void run(){
         while(true) {
             try {
                 Thread.sleep(500);
                 if(!bufferedMessages.isEmpty()){
-                    Thread.sleep(000);
+                    Thread.sleep(500);
+                    clearUsername(username);
                     bufferedMessages.sort(Comparator.comparing(Message::getDataEnvio).reversed());
                     for (Message message: bufferedMessages){
                         System.out.println(message);
+                        System.out.print(username + ": ");
                     }
                     bufferedMessages.clear();
                 }
