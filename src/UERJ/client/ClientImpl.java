@@ -28,7 +28,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         this.username = user;
 
         try {
-            server.checkIn(this);
+            checkIn();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -105,6 +105,11 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     @Override
     public void sendMessage(Message message) throws RemoteException {
         server.sendMessage(message);
+    }
+
+    @Override
+    public void checkIn() throws RemoteException {
+        sendMessage(new Message("Estou Entrando",username));
     }
 
     @Override

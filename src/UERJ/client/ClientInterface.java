@@ -11,5 +11,7 @@ public interface ClientInterface extends Remote {
 
     public void sendMessage(Message message) throws RemoteException;
 
+    public void checkIn() throws RemoteException;
+
     public String getUsername() throws RemoteException;
 }
