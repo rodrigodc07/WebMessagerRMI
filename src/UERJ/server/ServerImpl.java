@@ -24,8 +24,6 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
     
     private MulticastSocket socketListener = null;
     private byte[] buf = new byte[1024];
-    private DatagramSocket socket;
-    private InetAddress group;
 
     @Override
     public void sendMessage(Message message) throws RemoteException {
@@ -34,7 +32,7 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
 
     @Override
     public void pushMessage(Message message) throws RemoteException {
-        List<String> clients_name = RMIRegistry.listObjects();
+        List<String> clients_name = RMIRegistry.listObjects(port);
         for (String client_name:clients_name){
             ClientInterface client = (ClientInterface) RMIRegistry.getObjectFromRMI(port, client_name);
             client.pullMessages(message);
