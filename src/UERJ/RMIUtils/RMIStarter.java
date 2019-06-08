@@ -10,6 +10,7 @@ public class RMIStarter {
         try {
             return LocateRegistry.createRegistry(port);
         } catch (RemoteException e) {
+            e.printStackTrace();
             return null;
         }
     }
