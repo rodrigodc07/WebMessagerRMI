@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package UERJ.output;
 
 import UERJ.Message;
@@ -12,10 +7,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-/**
- *
- * @author LCC
- */
 public class MulticastSocketServer implements MessageSenderService{
     
     private void multicast(Message message) throws IOException {
