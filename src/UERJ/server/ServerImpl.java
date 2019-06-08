@@ -55,6 +55,7 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socketListener.receive(packet);
                 Message received = new Message(packet.getData());
+                received.setDataChegada();
                 pushMessage(received);
                 if ("end".equals(received.getBody())) {
                     break;

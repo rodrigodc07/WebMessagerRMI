@@ -14,6 +14,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
     private String username;
     private ServerInterface server;
     private ArrayList<Message> messageBuffer = new ArrayList<Message>();
+    private ArrayList<Message> messageHistory = new ArrayList<Message>();
 
     public ClientImpl(int port, String user) {
 
@@ -60,6 +61,7 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
                 for (Message message: messageBuffer){
                     System.out.println(message);
                     System.out.print(username + ": ");
+                    messageHistory.add(message);
                 }
                 messageBuffer.clear();
             }

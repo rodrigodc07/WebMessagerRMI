@@ -7,6 +7,7 @@ public class Message implements Serializable {
 
     private String body;
     private Date dataEnvio;
+    private Date dataChegada;
     private String from;
 
     public Message(String body, String username) {
@@ -39,6 +40,10 @@ public class Message implements Serializable {
         return from;
     }
 
+    public Date getDataChegada() { return this.dataChegada;}
+
+    public void setDataChegada() { this.dataChegada = new Date(); }
+
     public byte[] toStream() {
         byte[] stream = null;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -46,7 +51,6 @@ public class Message implements Serializable {
             oos.writeObject(this);
             stream = baos.toByteArray();
         } catch (IOException e) {
-            // Error in serialization
             e.printStackTrace();
         }
         return stream;
@@ -54,6 +58,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return getFrom() + ": " + getBody() + " enviado as " + getDataEnvio();
+        return getFrom() + ": " + getBody() + " enviado as " + getDataEnvio() + " recebida as " + getDataChegada();
     }
 }
