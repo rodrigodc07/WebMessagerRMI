@@ -7,6 +7,7 @@ import UERJ.server.ServerInterface;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class ClientImpl implements ClientInterface, Serializable, Runnable {
@@ -50,13 +51,13 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         return scanner.nextLine();
     }
 
-    //TODO adiciona ordenacao no buffer de menssagens
     public void run(){
         while(true) {
             try {
                 Thread.sleep(500);
                 if(!bufferedMessages.isEmpty()){
                     Thread.sleep(5000);
+                    bufferedMessages.sort(Comparator.comparing(Message::getDataEnvio).reversed());
                     for (Message message: bufferedMessages){
                         System.out.println(message);
                     }
