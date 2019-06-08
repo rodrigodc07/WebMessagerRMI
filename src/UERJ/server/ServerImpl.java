@@ -45,12 +45,6 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
         this.messageSenderService = new MulticastSocketServer();
     }
 
-    public static void main(String[] args) {
-        ServerInterface server = new ServerImpl(Integer.parseInt(args[0]));
-        Thread t = new Thread((Runnable) server);
-        t.start();
-    }
-
     @Override
     public void run() {
         try {
