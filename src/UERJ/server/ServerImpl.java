@@ -39,6 +39,11 @@ public class ServerImpl implements ServerInterface, Serializable, Runnable {
         }
     }
 
+    @Override
+    public void checkIn(ClientInterface clientInterface) throws RemoteException {
+        sendMessage(new Message("Estou Entrando",clientInterface.getUsername()));
+    }
+
     public ServerImpl(int port) {
         this.port = port;
         RMIRegistry.registryInRMI(port,"server",this);

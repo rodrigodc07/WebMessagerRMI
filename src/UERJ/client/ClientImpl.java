@@ -27,6 +27,12 @@ public class ClientImpl implements ClientInterface, Serializable, Runnable {
         this.server = server;
         this.username = user;
 
+        try {
+            server.checkIn(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         RMIRegistry.registryInRMI(port,"client_" + user,this);
     }
 
