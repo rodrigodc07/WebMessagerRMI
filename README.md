@@ -9,14 +9,14 @@ javac @sources.txt
 rmic UERJ.client.ClientImpl
 rmic UERJ.server.ServerImpl
 ```
-
-## Executar
+## Decições de Projeto
 ### Variaveis de Ambiente
 O programa tem 3 variaveis de ambiente, as quais são definidas no arquivo application.properties.
-- rmi.port
-- socket.address
-- socket.port
+- rmi.port: A porta onde será rodado o servidor de nomes do RMI
+- socket.address: O endereço ip de multicast utilizado pelos servidores de envio de menssagem
+- socket.port: A porta o onde será inicializado o servidor de envio de mensagem.
 
+## Executar
 ### RMI-Registry
 - Para iniciar o registry do RMI basta rodar a classe java desejada para o servidor RMI-Registry.
 ```bash
