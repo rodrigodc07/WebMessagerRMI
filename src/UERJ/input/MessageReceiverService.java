@@ -1,5 +1,5 @@
 package UERJ.input;
 
-public interface MessageReceiverService {
+public interface MessageReceiverService extends Runnable{
 
 }

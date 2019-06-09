@@ -10,7 +10,7 @@ import java.net.MulticastSocket;
 
 import static UERJ.properties.JavaProperties.getJavaProperties;
 
-public class MulticastSocketMessageReceiverService implements MessageReceiverService, Runnable{
+public class MulticastSocketMessageReceiverService implements MessageReceiverService{
 
     private final int port;
     private final String address;
