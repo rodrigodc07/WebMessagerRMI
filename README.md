@@ -24,7 +24,7 @@ java UERJ.RMIUtils.RMIStarter
 ```
 ### Servidor
 - Para executar o servidor primeiro é preciso ter em execução a classe do RMIStarter.
-- Executar a classe java abaixo com primeiro argumento sendo a porta onde o RMI-Registry está.
+- Executar a classe java abaixo
 ```bash
 java UERJ.server.ServerMain
 ```
