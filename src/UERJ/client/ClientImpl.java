@@ -2,6 +2,7 @@ package UERJ.client;
 
 import UERJ.Message;
 import UERJ.RMIUtils.RMIRegistry;
+import UERJ.properties.JavaProperties;
 import UERJ.server.ServerInterface;
 
 import java.io.Serializable;
@@ -9,14 +10,20 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import static UERJ.properties.JavaProperties.getJavaProperties;
+
 public class ClientImpl implements ClientInterface, Serializable, Runnable {
 
+    private int port;
     private String username;
     private ServerInterface server;
     private ArrayList<Message> messageBuffer = new ArrayList<Message>();
     private ArrayList<Message> messageHistory = new ArrayList<Message>();
 
-    public ClientImpl(int port, String user) {
+    public ClientImpl(String user) {
+
+        JavaProperties javaProperties = getJavaProperties();
+        this.port = Integer.parseInt(javaProperties.getProperty("rmi.port"));
 
         ServerInterface server = (ServerInterface) RMIRegistry.getObjectFromRMI(port,"server");
         System.out.println("Connected to UERJ.Server");

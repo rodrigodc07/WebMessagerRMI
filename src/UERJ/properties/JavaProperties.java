@@ -1,6 +1,6 @@
 package UERJ.properties;
 
-import UERJ.output.MulticastSocketServer;
+import UERJ.output.MulticastSocketMessageSenderServer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ public class JavaProperties {
     private Properties properties;
 
     private JavaProperties(){
-        try (InputStream input = MulticastSocketServer.class.getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream input = MulticastSocketMessageSenderServer.class.getClassLoader().getResourceAsStream("application.properties")) {
 
             this.properties = new Properties();
 

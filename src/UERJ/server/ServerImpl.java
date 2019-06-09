@@ -4,19 +4,16 @@ import UERJ.Message;
 import UERJ.RMIUtils.RMIRegistry;
 import UERJ.client.ClientInterface;
 import UERJ.input.MessageReceiverService;
-import UERJ.input.MulticastSocketReciver;
+import UERJ.input.MulticastSocketMessageReceiverService;
 import UERJ.output.MessageSenderService;
-import UERJ.output.MulticastSocketServer;
+import UERJ.output.MulticastSocketMessageSenderServer;
+import UERJ.properties.JavaProperties;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.rmi.RemoteException;
-import java.util.Collections;
 import java.util.List;
+
+import static UERJ.properties.JavaProperties.getJavaProperties;
 
 public class ServerImpl implements ServerInterface, Serializable {
 
@@ -39,11 +36,13 @@ public class ServerImpl implements ServerInterface, Serializable {
         }
     }
 
-    public ServerImpl(int port) {
-        this.port = port;
+    public ServerImpl() {
+        JavaProperties javaProperties = getJavaProperties();
+        this.port = Integer.parseInt(javaProperties.getProperty("rmi.port"));
+
         RMIRegistry.registryInRMI(port,"server",this);
-        this.messageSenderService = new MulticastSocketServer();
-        this.messageReceiverService = new MulticastSocketReciver( s -> {
+        this.messageSenderService = new MulticastSocketMessageSenderServer();
+        this.messageReceiverService = new MulticastSocketMessageReceiverService(s -> {
             try {
                 pushMessage(s);
             } catch (RemoteException e) {

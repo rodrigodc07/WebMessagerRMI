@@ -1,21 +1,26 @@
 package UERJ.RMIUtils;
 
+import UERJ.properties.JavaProperties;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+
+import static UERJ.properties.JavaProperties.getJavaProperties;
 
 public class RMIStarter {
 
-    private static Registry createRegistry(int port){
+    private static void createRegistry(){
         try {
-            return LocateRegistry.createRegistry(port);
+            JavaProperties javaProperties = getJavaProperties();
+            int port = Integer.parseInt(javaProperties.getProperty("rmi.port"));
+
+            LocateRegistry.createRegistry(port);
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
         }
     }
     public static void main(String[] args){
-        createRegistry(Integer.parseInt(args[0]));
+        createRegistry();
         while (true);
     }
 }

@@ -10,7 +10,7 @@ import java.net.MulticastSocket;
 
 import static UERJ.properties.JavaProperties.getJavaProperties;
 
-public class MulticastSocketReciver implements MessageReceiverService, Runnable{
+public class MulticastSocketMessageReceiverService implements MessageReceiverService, Runnable{
 
     private final int port;
     private final String address;
@@ -18,7 +18,7 @@ public class MulticastSocketReciver implements MessageReceiverService, Runnable{
     private byte[] buf = new byte[1024];
     private Lambda lambda;
 
-    public MulticastSocketReciver(Lambda lambda) {
+    public MulticastSocketMessageReceiverService(Lambda lambda) {
         this.lambda = lambda;
         JavaProperties javaProperties = getJavaProperties();
         port = Integer.parseInt(javaProperties.getProperty("socket.port"));

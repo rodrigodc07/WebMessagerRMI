@@ -20,7 +20,7 @@ public class ClientMain {
 
     public static void main(String[] args) {
 
-        ClientInterface client = new ClientImpl(Integer.parseInt(args[0]),args[1]);
+        ClientInterface client = new ClientImpl(args[0]);
         Thread t1 = new Thread((Runnable) client);
         t1.start();
         try {
