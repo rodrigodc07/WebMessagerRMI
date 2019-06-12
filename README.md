@@ -3,7 +3,7 @@
 Para Compilar o projeto basta seguir o seguinte passo a passo
 ```bash
 git clone https://github.com/rodrigodc07/WebMessagerRMI.git
-cd src
+cd WebMessagerRMI/src
 find -name "*.java" > sources.txt
 javac @sources.txt
 rmic UERJ.client.ClientImpl
