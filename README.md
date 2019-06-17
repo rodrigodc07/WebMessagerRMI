@@ -40,7 +40,7 @@ A classe MulticastSocketMessageSenderServer implementa a interface MessageSender
 ### Server
 Este pacote possui duas classes java e uma interface. responsaveis por definir o servidor de envios de menssagens e inicia-lo.
 
-A interface ServerInterface diz que um servidor de extender a interface remote, além de ter dois metodos
+A interface ServerInterface diz que um servidor deve extender a interface remote, além de ter dois metodos
 - sendMessage: Envia uma menssagem para os outros servidores.
 - pushMessage: Envia uma menssagem para seus clientes.
 
@@ -51,6 +51,19 @@ E no seu construtor utiliza da classe JavaProperties para obter a variavel de am
 A classe ServerMain inicia um objeto ServerImpl.
 
 ### Client
+Este pacote possui duas classes java e uma interface. responsaveis por definir o cliente de envios e recebimento de menssagens e inicia-lo.
+
+A interface ClientInterface diz que um cliente de extender a interface remote, além de ter dois metodos
+- sendMessage: Envia uma menssagem para o servidor.
+- pullMessages: Recebe uma menssagem do servidor.
+- checkIn: Envia uma menssagem para o servidor dizendo que o cliente agora está logado.
+- getUsername: Retorna o nome de usuario do cliente.
+
+A classe ClientImpl implementa a interface ClientInterface, tem duas listas de menssagens, messageBuffer e messageHistory, as quais são utilizados para armazenar as menssagens recebidas, e controlar quais menssagens acabaram de ser recebidas do servidor, ele tambem implementa a interface runnable para em uma thread isolada monitorar se o servidor adicionou uma nova menssagem na lista messageBuffer.
+
+E no seu construtor recebe uma String para definir o username, utiliza da classe JavaProperties para obter a variavel de ambiente da porta na qual está o servidor de RMI e assim conseguir se conectar com servidor já registrado no RMI.
+
+A classe ClientMain inicia um objeto ClientImpl com o primeiro argumento passado pelo java, starta ele em outra thread dele, e monitora o teclado para receber a string das Menssagens do console.
 ## Executar
 ### RMI-Registry
 - Para iniciar o registry do RMI basta rodar a classe java desejada para o servidor RMI-Registry.
