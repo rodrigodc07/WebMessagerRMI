@@ -17,6 +17,8 @@ O programa tem 3 variaveis de ambiente, as quais são definidas no arquivo appli
 - socket.port: A porta o onde será inicializado o servidor de envio de mensagem.
 ### Registro
 O Registro do RMI é iniciado por um programa java assim como o cliente e o servidor.
+### Properties
+Este pacote contem apenas uma classe java JavaProperties, reponsavel por obter as variaveis definidas no arquivo application.properties e.
 ### RMIUtils
 Este pacote contem duas classes java, a primeira RMIStarter é reponsavel por iniciar o servidor de nomes RMI e mante-lo em execução, ela utiliza a classe JavaProperties para obter o valor da porta onde deverá rodar o servidor de nomes RMI.
 
@@ -39,7 +41,6 @@ E no seu construtor utiliza da classe JavaProperties para obter a variavel de am
 ### Client
 ### Input
 ### Output
-### Properties
 ## Executar
 ### RMI-Registry
 - Para iniciar o registry do RMI basta rodar a classe java desejada para o servidor RMI-Registry.
