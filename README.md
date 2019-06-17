@@ -32,7 +32,11 @@ Este pacote possue duas interfaces e uma classe, a primeira interface é Lambda,
 
 A segunda MessageReceiverService define que um serviço de recebimento de menssagens deve implementar a interface runnable, a fim de isolar a execução do serviço do resto do programa.
 
-A classe MulticastSocketMessageReceiverService implementa a interface MessageReceiverService, que deverá receber uma lambda que será executada quando houver uma nova menssagem. Além disso utiliza a classe JavaProperties para obter a variavel de ambiente da porta e o IP na qual irá receber os pacotes.
+A classe MulticastSocketMessageReceiverService implementa a interface MessageReceiverService e utiliza Socket Multicast para receber as menssagens, e deverá receber uma lambda que será executada quando houver uma nova menssagem. Além disso utiliza a classe JavaProperties para obter a variavel de ambiente da porta e o IP na qual irá receber os pacotes.
+### Output
+Este pacote possue uma interface e uma classe, a interface MessageSenderService define um serviço para envio de menssagens com o metodo send.
+
+A classe MulticastSocketMessageSenderServer implementa a interface MessageSenderService e utiliza Socket Multicast para enviar as menssagens, além disso utiliza a classe JavaProperties para obter a variavel de ambiente da porta e o IP na qual irá enviar os pacotes.
 ### Server
 Este pacote possui duas classes java e uma interface. responsaveis por definir o servidor de envios de menssagens e inicia-lo.
 
@@ -45,7 +49,6 @@ A classe ServerImpl implementa a interface ServerInterface, tem um objeto do tip
 E no seu construtor utiliza da classe JavaProperties para obter a variavel de ambiente da porta na qual está o servidor de RMI, além de iniciar os objetos messageSenderService e messageReceiverService, este ultimo enviando a lambda para quando uma menssagem for recebir utilizar o metodo pushMenssage().
 
 ### Client
-### Output
 ## Executar
 ### RMI-Registry
 - Para iniciar o registry do RMI basta rodar a classe java desejada para o servidor RMI-Registry.
