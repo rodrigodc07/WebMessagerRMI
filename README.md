@@ -48,6 +48,8 @@ A classe ServerImpl implementa a interface ServerInterface, tem um objeto do tip
 
 E no seu construtor utiliza da classe JavaProperties para obter a variavel de ambiente da porta na qual está o servidor de RMI, além de iniciar os objetos messageSenderService e messageReceiverService, este ultimo enviando a lambda para quando uma menssagem for recebir utilizar o metodo pushMenssage().
 
+A classe ServerMain inicia um objeto ServerImpl.
+
 ### Client
 ## Executar
 ### RMI-Registry
