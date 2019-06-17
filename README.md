@@ -18,7 +18,7 @@ O programa tem 3 variaveis de ambiente, as quais são definidas no arquivo appli
 ### Registro
 O Registro do RMI é iniciado por um programa java assim como o cliente e o servidor.
 ### RMIUtils
-Este pacote contem duas classes java RMIStarter, reponsavel por iniciar o servidor de nomes RMI e mante-lo em execução.
+Este pacote contem duas classes java, a primeira RMIStarter é reponsavel por iniciar o servidor de nomes RMI e mante-lo em execução.
 
 Já a classe RMIRegistry é uma classes com os seguintes metodos estaticos para facilitar a comunicação com o servidor RMI
 - getObjectFromRMI
@@ -26,6 +26,16 @@ Já a classe RMIRegistry é uma classes com os seguintes metodos estaticos para 
 - listObjects
 - getRegistry
 ### Server
+Este pacote possui duas classes java e uma interface. responsaveis por definir o servidor de envios de menssagens e inicia-lo.
+
+A interface ServerInterface diz que um servidor de extender a interface remote, além de ter dois metodos
+- sendMessage: Envia uma menssagem para os outros servidores.
+- pushMessage: Envia uma menssagem para seus clientes.
+
+A classe ServerImpl implementa a interface ServerInterface, tem um objeto do tipo messageSenderService e outro do tipo messageReceiverService, os quais são utilizados para implementar os metodos definidos pela interface.
+
+E no seu construtor utiliza da classe JavaProperties para obter a variavel de ambiente da porta na qual está o servidor de RMI, além de iniciar os objetos messageSenderService e messageReceiverService, este ultimo enviando a lambda para quando uma menssagem for recebir utilizar o metodo pushMenssage().
+
 ### Client
 ### Input
 ### Output
